@@ -14,7 +14,177 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_system: boolean
+          player_id: string
+          room_id: string
+          round: number
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          player_id: string
+          room_id: string
+          round?: number
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          player_id?: string
+          room_id?: string
+          round?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          client_id: string
+          display_name: string
+          eliminated: boolean
+          id: string
+          is_ai: boolean
+          is_host: boolean
+          joined_at: string
+          room_id: string
+        }
+        Insert: {
+          client_id: string
+          display_name: string
+          eliminated?: boolean
+          id?: string
+          is_ai?: boolean
+          is_host?: boolean
+          joined_at?: string
+          room_id: string
+        }
+        Update: {
+          client_id?: string
+          display_name?: string
+          eliminated?: boolean
+          id?: string
+          is_ai?: boolean
+          is_host?: boolean
+          joined_at?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          ai_player_id: string | null
+          code: string
+          created_at: string
+          host_id: string
+          id: string
+          phase: Database["public"]["Enums"]["game_phase"]
+          phase_ends_at: string | null
+          round: number
+          winner: string | null
+        }
+        Insert: {
+          ai_player_id?: string | null
+          code: string
+          created_at?: string
+          host_id: string
+          id?: string
+          phase?: Database["public"]["Enums"]["game_phase"]
+          phase_ends_at?: string | null
+          round?: number
+          winner?: string | null
+        }
+        Update: {
+          ai_player_id?: string | null
+          code?: string
+          created_at?: string
+          host_id?: string
+          id?: string
+          phase?: Database["public"]["Enums"]["game_phase"]
+          phase_ends_at?: string | null
+          round?: number
+          winner?: string | null
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string
+          id: string
+          room_id: string
+          round: number
+          target_id: string
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          room_id: string
+          round: number
+          target_id: string
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          room_id?: string
+          round?: number
+          target_id?: string
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +193,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      game_phase: "lobby" | "chat" | "voting" | "reveal" | "ended"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +320,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      game_phase: ["lobby", "chat", "voting", "reveal", "ended"],
+    },
   },
 } as const
